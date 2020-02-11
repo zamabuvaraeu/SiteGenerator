@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WebSiteGenerator>
+	
+	<configuration>
+		<wwwRoot></wwwRoot>
+		<pandocFolder></pandocFolder>
+		<oneLineFolder></oneLineFolder>
+		<archivatorFolder></archivatorFolder>
+		<httpPutFolder></httpPutFolder>
+		<contentLanguage></contentLanguage>
+		<ipBindAddress></ipBindAddress>
+		<credentials></credentials>
+	</configuration>
+	
+	<generationFiles>
+		<file></file>
+		<yaml></yaml>
+		<urlPath></urlPath>
+		<contentType></contentType>
+	</generationFiles>
+	
+	<textFiles>
+		<file></file>
+		<urlPath></urlPath>
+		<contentType></contentType>
+	</textFiles>
+	
+	<binaryFiles>
+		<file></file>
+		<urlPath></urlPath>
+		<contentType></contentType>
+	</binaryFiles>
+	
+</WebSiteGenerator>
