@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru" xml:lang="ru">
+
+<head>
+	<title>Генератор статических сайтов</title>
+	<link rel="stylesheet" href="styles.css" type="text/css" />
+	<script language="VBScript" type="text/VBScript" src="Generator.vbs"></script>
+</head>
+
+<body><form name="frmMain" id="frmMain">
+	
+<h1>Генератор статических сайтов</h1>
+	
+	<p>Этот генератор использует:</p>
+	
+	<ul>
+		<li>программу <em>pandoc</em> для создания html‐страниц;</li>
+		<li>программу <em>oneline.exe</em> для удаления лишних пробельных символов, табуляций и переносов строк;</li>
+		<li>класс <em>XmlHttpRequest</em> для отправки файлов на сервер методом PUT.</li>
+	</ul>
+	
+	<h2>Генерация сайта и отправка</h2>
+		
+		<h3>Двоичные файлы</h3>
+			
+			<p>Отправка двоичных файлов: рисунки, архивы, robots.txt, гугло‐ и яндекс‐идентификации:</p>
+			
+			<p><input type="button" value="Отправить двоичные файлы" id="cmdSendBinary" onClick="TestSub"></p>
+			
+		<h3>Генерируемые html файлы</h3>
+			
+			<p>Генерация текстовых файлов из маркдауна по шаблонам в html, удаление пробельных символов, создание сжатых файлов и отправка на сервер:</p>
+			
+			<p><input type="button" value="Генерировать html и отправить" id="cmdConvertAndSendHtmlFiles" onClick="TestSub"></p>
+			
+		<h3>Другие текстовые файлы</h3>
+			
+			<p>Удаление пробельных символов из html, rss, sitemap.xml и файлов стилей, создание сжатых файлов и отправка на сервер:</p>
+			
+			<p><input type="button" value="Отправить текстовые файлы" id="cmdSendTextFiles" onClick="TestSub"></p>
+			
+		<h3>Все файлы</h3>
+			
+			<p>Отправить двоичные файлы, сгенерировать html и отправить текстовые файлы:</p>
+			
+			<p><input type="button" value="Отправить все файлы" id="cmdSendAllFiles" onClick="TestSub"></p>
+			
+	<h2>Генерация и отправка файлов по одному</h2>
+		
+		<p>Обновить список файлов:</p>
+		
+		<ul>
+			<li>конвертируемые файлы маркдауна;</li>
+			<li>текстовые файлы, нуждающиеся в удалении пробелов и переносов строки;</li>
+			<li>двоичные файлы.</li>
+		</ul>
+		
+		<p><input type="button" value="Обновить список файлов" id="cmdUpdateFiles" onClick="TestSub"></p>
+		
+		<div id="divFileList"></div>
+		
+		
+		
+</form></body>
+
+</html>
