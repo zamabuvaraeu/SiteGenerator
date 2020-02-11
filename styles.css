@@ -1,0 +1,28 @@
+html
+{
+	background:#EEEEEE;
+	font-family:sans-serif;
+}
+
+table
+{
+	border:solid 1px #CCCCCC;
+	border-radius:.25em;
+}
+
+th
+{
+	border:solid 1px #CCCCCC;
+}
+
+td
+{
+	border:solid 1px #CCCCCC;
+}
+
+hr
+{
+	border-color:#BBBBBB;
+	margin:1em 0 1em 0;
+	clear:both;
+}
