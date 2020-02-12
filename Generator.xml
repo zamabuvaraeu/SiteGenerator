@@ -2,33 +2,37 @@
 <WebSiteGenerator>
 	
 	<configuration>
+		<url></url>
 		<wwwRoot></wwwRoot>
 		<pandocFolder></pandocFolder>
 		<oneLineFolder></oneLineFolder>
 		<archivatorFolder></archivatorFolder>
 		<httpPutFolder></httpPutFolder>
-		<contentLanguage></contentLanguage>
 		<ipBindAddress></ipBindAddress>
-		<credentials></credentials>
+		<userName></userName>
+		<password></password>
 	</configuration>
+	
+	<binaryFiles>
+		<file></file>
+		<urlPath></urlPath>
+		<contentType></contentType>
+		<contentLanguage></contentLanguage>
+	</binaryFiles>
 	
 	<generationFiles>
 		<file></file>
 		<yaml></yaml>
 		<urlPath></urlPath>
 		<contentType></contentType>
+		<contentLanguage></contentLanguage>
 	</generationFiles>
 	
 	<textFiles>
 		<file></file>
 		<urlPath></urlPath>
 		<contentType></contentType>
+		<contentLanguage></contentLanguage>
 	</textFiles>
-	
-	<binaryFiles>
-		<file></file>
-		<urlPath></urlPath>
-		<contentType></contentType>
-	</binaryFiles>
 	
 </WebSiteGenerator>
