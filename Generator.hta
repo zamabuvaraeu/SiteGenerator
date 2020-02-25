@@ -7,7 +7,7 @@
 	<script language="VBScript" type="text/VBScript" src="Generator.vbs"></script>
 </head>
 
-<body><form name="frmMain" id="frmMain">
+<body onLoad="BodyLoad"><form name="frmMain" id="frmMain">
 	
 <h1>Генератор статических сайтов</h1>
 	
@@ -21,10 +21,20 @@
 	
 	<h2>Настройки</h2>
 		
+		<p><input type="file" id="txtConfigurationFileName" /></p>
+		
+		<p><input type="button" value="Загрузить файл конфигурации" id="cmdApplyConfigurationFile" onClick="LoadConfiguration" /></p>
+		<!--
+		<p><input type="button" value="Применить конфигурацию" id="cmdUpdateFiles" onClick="LoadConfiguration" /></p>
+		-->
+		
 		<h3>Сайт</h3>
 			
 			<p>Адрес сайта:</p>
 			<p><input type="text" value="" id="txtUrl" /></p>
+			
+			<p>Корневая директория исходных кодов сайта:</p>
+			<p><input type="text" value="" id="txtWwwRoot" /></p>
 			
 			<p>Имя пользователя:</p>
 			<p><input type="text" value="" id="txtUserName" /></p>
@@ -32,20 +42,17 @@
 			<p>Пароль:</p>
 			<p><input type="text" value="" id="txtPassword" /></p>
 			
-		<h3>Пути к файлам</h3>
-			
-			<p>Корневая директория исходных кодов сайта:</p>
-			<p><input type="text" value="" id="txtWwwRoot" /></p>
+		<h3>Пути к утилитам</h3>
 			
 			<p>Каталог с программой pandoc:</p>
-			<p><input type="text" value="C:\Program Files\Pandoc\pandoc.exe" id="txtPandocFolder" /></p>
+			<p><input type="text" value="" id="txtPandocFolder" /></p>
 			
 			<p>Каталог с программой oneline:</p>
 			<p><input type="text" value="" id="txtOnelineFolder" /></p>
 			
 			<p>Каталог с архиватором 7zip:</p>
-			<p><input type="text" value="C:\Program Files\7-Zip\7z.exe" id="txt7zipFolder" /></p>
-			
+			<p><input type="text" value="" id="txt7zipFolder" /></p>
+		
 	<h2>Генерация сайта и отправка</h2>
 		
 		<h3>Двоичные файлы</h3>
@@ -74,18 +81,22 @@
 			
 	<h2>Генерация и отправка файлов по одному</h2>
 		
-		<p>Обновить список файлов:</p>
-		
 		<ul>
+			<li>двоичные файлы;</li>
 			<li>конвертируемые файлы маркдауна;</li>
-			<li>текстовые файлы, нуждающиеся в удалении пробелов и переносов строки;</li>
-			<li>двоичные файлы.</li>
+			<li>текстовые файлы, нуждающиеся в удалении пробелов и переносов строки.</li>
 		</ul>
 		
-		<p><input type="button" value="Обновить список файлов" id="cmdUpdateFiles" onClick="TestSub" /></p>
+		<div id="PlaceHolderFileList">
+		<div id="divFileList">
+			<h4>UrlPath</h4>
+				<p>имя файла</p>
+				<p>миме</p>
+				<p>язык</p>
+				<p><input type="button" value="Отправить" onClick="TestSub2 1, 2222, 314, 404, 503" /></p>
 		
-		<div id="divFileList"></div>
-		
+		</div>
+		</div>
 		
 		
 </form></body>
