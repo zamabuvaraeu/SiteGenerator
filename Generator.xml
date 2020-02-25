@@ -3,7 +3,7 @@
 	
 	<configuration>
 		<url></url>
-		<wwwRoot></wwwRoot>
+		<sourceFolder></sourceFolder>
 		<pandocFolder></pandocFolder>
 		<oneLineFolder></oneLineFolder>
 		<archivatorFolder></archivatorFolder>
@@ -14,25 +14,25 @@
 	</configuration>
 	
 	<binaryFiles>
-		<file></file>
 		<urlPath></urlPath>
+		<file></file>
 		<contentType></contentType>
 		<contentLanguage></contentLanguage>
 	</binaryFiles>
 	
-	<generationFiles>
-		<file></file>
-		<yaml></yaml>
-		<urlPath></urlPath>
-		<contentType></contentType>
-		<contentLanguage></contentLanguage>
-	</generationFiles>
-	
 	<textFiles>
-		<file></file>
 		<urlPath></urlPath>
+		<file></file>
 		<contentType></contentType>
 		<contentLanguage></contentLanguage>
 	</textFiles>
+	
+	<generationFiles>
+		<urlPath></urlPath>
+		<file></file>
+		<contentType></contentType>
+		<contentLanguage></contentLanguage>
+		<yaml></yaml>
+	</generationFiles>
 	
 </WebSiteGenerator>
