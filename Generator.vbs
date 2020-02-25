@@ -469,4 +469,8 @@ Sub SendTextFile()
 	
 	Set oFile = Nothing
 	
+	FSO.DeleteFile FullFileNameTxt
+	FSO.DeleteFile FullFileNameGzip
+	FSO.DeleteFile FullFileNameTxtUtf8
+	
 End Sub
