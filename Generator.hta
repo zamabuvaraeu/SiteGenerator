@@ -57,45 +57,39 @@
 		
 		<h3>Двоичные файлы</h3>
 			
-			<p>Отправка двоичных файлов: рисунки, архивы, robots.txt, гугло‐ и яндекс‐идентификации:</p>
+			<p>Рисунки, музыка, видео, архивы, robots.txt, гугло‐ и яндекс‐идентификации отправляются на сервер без изменений:</p>
 			
-			<p><input type="button" value="Отправить двоичные файлы" id="cmdSendBinary" onClick="TestSub" /></p>
+			<p><input type="button" value="Отправить двоичные файлы" id="cmdSendAllBinaryFiles" onClick="SendAllBinaryFiles" /></p>
+			
+		<h3>Текстовые файлы</h3>
+			
+			<p>Удаление пробелов и переносов строк из html, rss, sitemap.xml и css, сжатие файлов и отправка на сервер:</p>
+			
+			<p><input type="button" value="Отправить текстовые файлы" id="cmdSendAllTextFiles" onClick="SendAllTextFiles" /></p>
 			
 		<h3>Генерируемые html файлы</h3>
 			
-			<p>Генерация текстовых файлов из маркдауна по шаблонам в html, удаление пробельных символов, создание сжатых файлов и отправка на сервер:</p>
+			<p>Генерация текстовых файлов из маркдауна в html, удаление пробельных символов, сжатие файлов и отправка на сервер:</p>
 			
-			<p><input type="button" value="Генерировать html и отправить" id="cmdConvertAndSendHtmlFiles" onClick="TestSub" /></p>
-			
-		<h3>Другие текстовые файлы</h3>
-			
-			<p>Удаление пробельных символов из html, rss, sitemap.xml и файлов стилей, создание сжатых файлов и отправка на сервер:</p>
-			
-			<p><input type="button" value="Отправить текстовые файлы" id="cmdSendTextFiles" onClick="TestSub" /></p>
+			<p><input type="button" value="Отправить генерируемые файлы" id="cmdSendAllGeneratedFiles" onClick="SendAllGeneratedFiles" /></p>
 			
 		<h3>Все файлы</h3>
 			
-			<p>Отправить двоичные файлы, сгенерировать html и отправить текстовые файлы:</p>
+			<p>Отправить двоичные файлы, текстовые файлы, сгенерировать html и отправить:</p>
 			
-			<p><input type="button" value="Отправить все файлы" id="cmdSendAllFiles" onClick="TestSub" /></p>
+			<p><input type="button" value="Отправить все файлы" id="cmdSendAllFiles" onClick="SendAllFiles" /></p>
 			
-	<h2>Генерация и отправка файлов по одному</h2>
-		
-		<ul>
-			<li>двоичные файлы;</li>
-			<li>конвертируемые файлы маркдауна;</li>
-			<li>текстовые файлы, нуждающиеся в удалении пробелов и переносов строки.</li>
-		</ul>
+	<h2>Отправка файлов по одному</h2>
 		
 		<div id="PlaceHolderFileList">
-		<div id="divFileList">
-			<h4>UrlPath</h4>
-				<p>имя файла</p>
-				<p>миме</p>
-				<p>язык</p>
-				<p><input type="button" value="Отправить" onClick="TestSub2 1, 2222, 314, 404, 503" /></p>
-		
-		</div>
+			<div id="divFileList">
+				<h4>UrlPath</h4>
+					<p>имя файла</p>
+					<p>миме</p>
+					<p>язык</p>
+					<p><input type="button" value="Отправить" onClick="" /></p>
+			
+			</div>
 		</div>
 		
 		
