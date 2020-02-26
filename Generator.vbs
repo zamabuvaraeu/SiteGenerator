@@ -67,18 +67,23 @@ Function ReadTextFile(FileName)
 	Set FSO = Nothing
 End Function
 
-Sub ClearFilePlaceholder()
-	Dim PlaceHolderFileList
-	Set PlaceHolderFileList = document.getElementById("PlaceHolderFileList")
+Function HttpPutData(WwwUrlPath, DataBytes, ContentType, ContentLanguage, UserName, Password)
+	Dim Request
+	Set Request = CreateObject("Microsoft.XmlHttp")
 	
-	Dim divFileList
-	Set divFileList = document.getElementById("divFileList")
+	Request.Open "PUT", WwwUrlPath, False, UserName, Password
 	
-	PlaceHolderFileList.RemoveChild(divFileList)
-	Set divFileList = Nothing
+	Request.SetRequestHeader "Content-Type", ContentType
+	If Len(ContentLanguage) > 0 Then
+		Request.SetRequestHeader "Content-Language", ContentLanguage
+	End If
 	
-	Set PlaceHolderFileList = Nothing
-End Sub
+	Request.send DataBytes
+	
+	HttpPutData = "HTTP/1.1 " & Request.Status & " " & Request.StatusText & vbCrLf &  Request.getAllResponseHeaders
+	
+	Set Request = Nothing
+End Function
 
 Sub SetTextBoxValue(TextBoxName, Value)
 	Dim TextBox
@@ -101,6 +106,23 @@ Function GetTextBoxValueByIndex(NodesCollection, Index)
 	Set TextBox = Nothing
 End Function
 
+Function QuoteString(Value)
+	QuoteString = """" & Value & """"
+End Function
+
+Sub ClearFilePlaceholder()
+	Dim PlaceHolderFileList
+	Set PlaceHolderFileList = document.getElementById("PlaceHolderFileList")
+	
+	Dim divFileList
+	Set divFileList = document.getElementById("divFileList")
+	
+	PlaceHolderFileList.RemoveChild(divFileList)
+	Set divFileList = Nothing
+	
+	Set PlaceHolderFileList = Nothing
+End Sub
+
 Sub AppendTextElement(Container, ElementName, innerText)
 	Dim node
 	Set node = Document.CreateElement(ElementName)
@@ -108,10 +130,6 @@ Sub AppendTextElement(Container, ElementName, innerText)
 	Container.appendChild(node)
 	Set node = Nothing
 End Sub
-
-Function QuoteString(Value)
-	QuoteString = """" & Value & """"
-End Function
 
 Function GetSectionHiddenValue(node, Index)
 	GetSectionHiddenValue = GetTextBoxValueByIndex(node.parentNode.parentNode.childNodes, Index)
@@ -249,7 +267,7 @@ Function GetGenerationFileOptions(xmlNode)
 	
 End Function
 
-Sub CreateConfigurationSection(oConfig)
+Sub SetConfigurationTextBoxes(oConfig)
 	SetTextBoxValue "txtUrl", oConfig.Url
 	SetTextBoxValue "txtWwwRoot", oConfig.SourceFolder
 	SetTextBoxValue "txtUserName", oConfig.UserName
@@ -447,7 +465,7 @@ Sub LoadConfiguration()
 	
 	Dim oConfig
 	Set oConfig = GetConfigurationOptions(xmlParser)
-	CreateConfigurationSection oConfig
+	SetConfigurationTextBoxes oConfig
 	Set oConfig = Nothing
 	
 	ClearFilePlaceholder
@@ -495,24 +513,6 @@ Sub LoadConfiguration()
 	Set divFileList = Nothing
 	
 End Sub
-
-Function HttpPutData(WwwUrlPath, DataBytes, ContentType, ContentLanguage, UserName, Password)
-	Dim Request
-	Set Request = CreateObject("Microsoft.XmlHttp")
-	
-	Request.Open "PUT", WwwUrlPath, False, UserName, Password
-	
-	Request.SetRequestHeader "Content-Type", ContentType
-	If Len(ContentLanguage) > 0 Then
-		Request.SetRequestHeader "Content-Language", ContentLanguage
-	End If
-	
-	Request.send DataBytes
-	
-	HttpPutData = "HTTP/1.1 " & Request.Status & " " & Request.StatusText & vbCrLf &  Request.getAllResponseHeaders
-	
-	Set Request = Nothing
-End Function
 
 Function SendFile(UrlPath, FileName, ContentType, ContentLanguage)
 	Dim SourceFolder, FullFileName
