@@ -59,26 +59,32 @@
 			
 			<p>Рисунки, музыка, видео, архивы, robots.txt, гугло‐ и яндекс‐идентификации отправляются на сервер без изменений:</p>
 			
-			<p><input type="button" value="Отправить двоичные файлы" id="cmdSendAllBinaryFiles" onClick="SendAllBinaryFiles" /></p>
+			<p><input type="button" value="Отправить двоичные файлы" id="cmdSendAllBinaryFiles" onClick="SendAllBinaryFiles_Click" /></p>
 			
 		<h3>Текстовые файлы</h3>
 			
 			<p>Удаление пробелов и переносов строк из html, rss, sitemap.xml и css, сжатие файлов и отправка на сервер:</p>
 			
-			<p><input type="button" value="Отправить текстовые файлы" id="cmdSendAllTextFiles" onClick="SendAllTextFiles" /></p>
+			<p><input type="button" value="Отправить текстовые файлы" id="cmdSendAllTextFiles" onClick="SendAllTextFiles_Click" /></p>
 			
 		<h3>Генерируемые html файлы</h3>
 			
 			<p>Генерация текстовых файлов из маркдауна в html, удаление пробельных символов, сжатие файлов и отправка на сервер:</p>
 			
-			<p><input type="button" value="Отправить генерируемые файлы" id="cmdSendAllGeneratedFiles" onClick="SendAllGeneratedFiles" /></p>
+			<p><input type="button" value="Отправить генерируемые файлы" id="cmdSendAllGeneratedFiles" onClick="SendAllGeneratedFiles_Click" /></p>
 			
 		<h3>Все файлы</h3>
 			
 			<p>Отправить двоичные файлы, текстовые файлы, сгенерировать html и отправить:</p>
 			
-			<p><input type="button" value="Отправить все файлы" id="cmdSendAllFiles" onClick="SendAllFiles" /></p>
+			<p><input type="button" value="Отправить все файлы" id="cmdSendAllFiles" onClick="SendAllFiles_Click" /></p>
 			
+	<h2>Результаты</h2>
+		
+		<p>В это поле вносятся заголовки ответа сервера:</p>
+		
+		<p><textarea id="txtOutput" rows="16" cols="64" name="txtOutput" readonly="readonly"></textarea></p>
+		
 	<h2>Отправка файлов по одному</h2>
 		
 		<div id="PlaceHolderFileList">

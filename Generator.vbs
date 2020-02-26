@@ -322,7 +322,7 @@ Sub CreateBinaryFileSection(divFileList, oFile)
 	Set cmdSendFile = Document.CreateElement("input")
 	cmdSendFile.type = "button"
 	cmdSendFile.value = "Отправить"
-	Set cmdSendFile.onClick = GetRef("SendBinaryFile")
+	Set cmdSendFile.onClick = GetRef("SendBinaryFile_Click")
 	ButtonContainer.appendChild(cmdSendFile)
 	Set cmdSendFile = Nothing
 	
@@ -378,7 +378,7 @@ Sub CreateTextFileSection(divFileList, oFile)
 	Set cmdSendFile = Document.CreateElement("input")
 	cmdSendFile.type = "button"
 	cmdSendFile.value = "Упростить и отправить"
-	Set cmdSendFile.onClick = GetRef("SendTextFile")
+	Set cmdSendFile.onClick = GetRef("SendTextFile_Click")
 	ButtonContainer.appendChild(cmdSendFile)
 	Set cmdSendFile = Nothing
 	
@@ -442,7 +442,7 @@ Sub CreateGenerationFileSection(divFileList, oFile)
 	Set cmdSendFile = Document.CreateElement("input")
 	cmdSendFile.type = "button"
 	cmdSendFile.value = "Генерировать, упростить и отправить"
-	Set cmdSendFile.onClick = GetRef("SendGenerationFile")
+	Set cmdSendFile.onClick = GetRef("SendGenerationFile_Click")
 	ButtonContainer.appendChild(cmdSendFile)
 	Set cmdSendFile = Nothing
 	
@@ -536,7 +536,11 @@ Function SendFile(UrlPath, FileName, ContentType, ContentLanguage)
 	
 End Function
 
-Sub SendBinaryFile()
+Sub SendAllBinaryFiles_Click()
+	
+End Sub
+
+Sub SendBinaryFile_Click()
 	Dim oFile
 	Set oFile = New BinaryFileOptions
 	
@@ -545,13 +549,13 @@ Sub SendBinaryFile()
 	oFile.ContentType = GetSectionHiddenValue(me, 2)
 	oFile.ContentLanguage = GetSectionHiddenValue(me, 3)
 	
-	SendFile oFile.UrlPath, oFile.FileName, oFile.ContentType, oFile.ContentLanguage
+	SetTextBoxValue "txtOutput", SendFile(oFile.UrlPath, oFile.FileName, oFile.ContentType, oFile.ContentLanguage)
 	
 	Set oFile = Nothing
 	
 End Sub
 
-Sub SendTextFile()
+Sub SendTextFile_Click()
 	Dim oFile
 	Set oFile = New TextFileOptions
 	
@@ -566,13 +570,17 @@ Sub SendTextFile()
 	FullFileNameTxtUtf8 = FullFileName & ".utf-8.txt"
 	FullFileNameGzip = FullFileName & ".gz"
 	
+	Dim Output
+	
 	TextFileToOneLine FullFileName
-	SendFile oFile.UrlPath, oFile.FileName & ".txt", oFile.ContentType, oFile.ContentLanguage
+	Output = SendFile(oFile.UrlPath, oFile.FileName & ".txt", oFile.ContentType, oFile.ContentLanguage)
 	
 	ArchiveFile FullFileNameGzip, FullFileNameTxtUtf8
-	SendFile oFile.UrlPath & ".gz", oFile.FileName & ".gz", "application/x-gzip", oFile.ContentLanguage
+	Output = Output & vbCrLf & vbCrLf & SendFile(oFile.UrlPath & ".gz", oFile.FileName & ".gz", "application/x-gzip", oFile.ContentLanguage)
 	
 	Set oFile = Nothing
+	
+	SetTextBoxValue "txtOutput", Output
 	
 	FSO.DeleteFile FullFileNameTxt
 	FSO.DeleteFile FullFileNameGzip
@@ -580,7 +588,7 @@ Sub SendTextFile()
 	
 End Sub
 
-Sub SendGenerationFile()
+Sub SendGenerationFile_Click()
 	Dim oFile
 	Set oFile = New GenerationFileOptions
 	
@@ -604,13 +612,17 @@ Sub SendGenerationFile()
 	GenerateFile oFile.YamlFileName
 	WshShell.CurrentDirectory = OldCurrentDirectory
 	
+	Dim Output
+	
 	TextFileToOneLine FullFileName
-	SendFile oFile.UrlPath, oFile.FileName & ".txt", oFile.ContentType, oFile.ContentLanguage
+	Output = SendFile(oFile.UrlPath, oFile.FileName & ".txt", oFile.ContentType, oFile.ContentLanguage)
 	
 	ArchiveFile FullFileNameGzip, FullFileNameTxtUtf8
-	SendFile oFile.UrlPath & ".gz", oFile.FileName & ".gz", "application/x-gzip", oFile.ContentLanguage
+	Output = Output & vbCrLf & vbCrLf & SendFile(oFile.UrlPath & ".gz", oFile.FileName & ".gz", "application/x-gzip", oFile.ContentLanguage)
 	
 	Set oFile = Nothing
+	
+	SetTextBoxValue "txtOutput", Output
 	
 	FSO.DeleteFile FullFileNameTxt
 	FSO.DeleteFile FullFileNameGzip
