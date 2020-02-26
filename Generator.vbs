@@ -109,6 +109,10 @@ Sub AppendTextElement(Container, ElementName, innerText)
 	Set node = Nothing
 End Sub
 
+Function QuoteString(Value)
+	QuoteString = """" & Value & """"
+End Function
+
 Function GetSectionHiddenValue(node, Index)
 	GetSectionHiddenValue = GetTextBoxValueByIndex(node.parentNode.parentNode.childNodes, Index)
 End Function
@@ -116,6 +120,39 @@ End Function
 Function GetConfigurationFileName()
 	GetConfigurationFileName = GetTextBoxValue("txtConfigurationFileName")
 End Function
+
+Sub TextFileToOneLine(FullFileName)
+	Dim OneLineUtils
+	OneLineUtils = GetTextBoxValue("txtOnelineFolder")
+	
+	Dim Commanda
+	Commanda = QuoteString(OneLineUtils) & " " & QuoteString(FullFileName)
+	
+	Dim RetCode
+	RetCode = WshShell.Run(Commanda, 0, True)
+End Sub
+
+Sub ArchiveFile(FullFileNameGzip, FullFileNameTxtUtf8)
+	Dim ArchUtils
+	ArchUtils = GetTextBoxValue("txt7zipFolder")
+	
+	Dim Commanda
+	Commanda = QuoteString(ArchUtils) & " a " & QuoteString(FullFileNameGzip) & " " & QuoteString(FullFileNameTxtUtf8) & " -mx9"
+	
+	Dim RetCode
+	RetCode = WshShell.Run(Commanda, 0, True)
+End Sub
+
+Sub GenerateFile(YamlFullFileName)
+	Dim PandocUtils
+	PandocUtils = GetTextBoxValue("txtPandocFolder")
+	
+	Dim Commanda
+	Commanda = QuoteString(PandocUtils) & " -d " & QuoteString(YamlFullFileName)
+	
+	Dim RetCode
+	RetCode = WshShell.Run(Commanda, 0, True)
+End Sub
 
 Function GetConfigurationOptions(xmlParser)
 	Set GetConfigurationOptions = New ConfigurationOptions
@@ -186,6 +223,27 @@ Function GetTextFileOptions(xmlNode)
 				GetTextFileOptions.ContentType = subNode.Text
 			Case "contentLanguage"
 				GetTextFileOptions.ContentLanguage = subNode.Text
+		End Select
+	Next
+	
+End Function
+
+Function GetGenerationFileOptions(xmlNode)
+	Set GetGenerationFileOptions = New GenerationFileOptions
+	
+	Dim subNode
+	For Each subNode In xmlNode.childNodes
+		Select Case subNode.nodeName
+			Case "urlPath"
+				GetGenerationFileOptions.UrlPath = subNode.Text
+			Case "file"
+				GetGenerationFileOptions.FileName = subNode.Text
+			Case "contentType"
+				GetGenerationFileOptions.ContentType = subNode.Text
+			Case "contentLanguage"
+				GetGenerationFileOptions.ContentLanguage = subNode.Text
+			Case "yaml"
+				GetGenerationFileOptions.YamlFileName = subNode.Text
 		End Select
 	Next
 	
@@ -301,8 +359,72 @@ Sub CreateTextFileSection(divFileList, oFile)
 	Dim cmdSendFile
 	Set cmdSendFile = Document.CreateElement("input")
 	cmdSendFile.type = "button"
-	cmdSendFile.value = "Отправить"
+	cmdSendFile.value = "Упростить и отправить"
 	Set cmdSendFile.onClick = GetRef("SendTextFile")
+	ButtonContainer.appendChild(cmdSendFile)
+	Set cmdSendFile = Nothing
+	
+	Container.appendChild(ButtonContainer)
+	Set ButtonContainer = Nothing
+	
+	divFileList.appendChild(Container)
+	Set Container = Nothing
+End Sub
+
+Sub CreateGenerationFileSection(divFileList, oFile)
+	Dim Container
+	Set Container = Document.CreateElement("div")
+	' Container.class = "binaryfilecontainer"
+	
+	Dim txtHiddenUrlPath
+	Set txtHiddenUrlPath = Document.CreateElement("input")
+	txtHiddenUrlPath.type = "hidden"
+	txtHiddenUrlPath.value = oFile.UrlPath
+	Container.appendChild(txtHiddenUrlPath)
+	Set txtHiddenUrlPath = Nothing
+	
+	Dim txtHiddenFile
+	Set txtHiddenFile = Document.CreateElement("input")
+	txtHiddenFile.type = "hidden"
+	txtHiddenFile.value = oFile.FileName
+	Container.appendChild(txtHiddenFile)
+	Set txtHiddenFile = Nothing
+	
+	Dim txtHiddenContentType
+	Set txtHiddenContentType = Document.CreateElement("input")
+	txtHiddenContentType.type = "hidden"
+	txtHiddenContentType.value = oFile.ContentType
+	Container.appendChild(txtHiddenContentType)
+	Set txtHiddenContentType = Nothing
+	
+	Dim txtHiddenContentLanguage
+	Set txtHiddenContentLanguage = Document.CreateElement("input")
+	txtHiddenContentLanguage.type = "hidden"
+	txtHiddenContentLanguage.value = oFile.ContentLanguage
+	Container.appendChild(txtHiddenContentLanguage)
+	Set txtHiddenContentLanguage = Nothing
+	
+	Dim txtHiddenYamlFileName
+	Set txtHiddenYamlFileName = Document.CreateElement("input")
+	txtHiddenYamlFileName.type = "hidden"
+	txtHiddenYamlFileName.value = oFile.YamlFileName
+	Container.appendChild(txtHiddenYamlFileName)
+	Set txtHiddenYamlFileName = Nothing
+	
+	AppendTextElement Container, "h4", oFile.UrlPath
+	AppendTextElement Container, "p", "Имя файла: " & oFile.FileName
+	AppendTextElement Container, "p", "Тип файла: " & oFile.ContentType
+	AppendTextElement Container, "p", "Язык файла: " & oFile.ContentLanguage
+	AppendTextElement Container, "p", "YamlFileName: " & oFile.YamlFileName
+	
+	Dim ButtonContainer
+	Set ButtonContainer = Document.CreateElement("p")
+	
+	Dim cmdSendFile
+	Set cmdSendFile = Document.CreateElement("input")
+	cmdSendFile.type = "button"
+	cmdSendFile.value = "Генерировать, упростить и отправить"
+	Set cmdSendFile.onClick = GetRef("SendGenerationFile")
 	ButtonContainer.appendChild(cmdSendFile)
 	Set cmdSendFile = Nothing
 	
@@ -360,8 +482,8 @@ Sub LoadConfiguration()
 	Set colNodes = xmlParser.selectNodes("/WebSiteGenerator/generationFiles")
 	For Each node In colNodes
 		Dim oGenerationFile
-		' Set oFile = GetGenerationFileOptions(node)
-		' CreateGenerationFileSection divFileList, oFile
+		Set oGenerationFile = GetGenerationFileOptions(node)
+		CreateGenerationFileSection divFileList, oGenerationFile
 		Set oGenerationFile = Nothing
 	Next
 	Set colNodes = Nothing
@@ -374,24 +496,32 @@ Sub LoadConfiguration()
 	
 End Sub
 
-Sub SendFile(UrlPath, FileName, ContentType, ContentLanguage)
-	' MsgBox UrlPath & vbCrLf & FileName & vbCrLf & ContentType & vbCrLf & ContentLanguage
+Function HttpPutData(WwwUrlPath, DataBytes, ContentType, ContentLanguage, UserName, Password)
+	Dim Request
+	Set Request = CreateObject("Microsoft.XmlHttp")
 	
-	Dim wwwRoot, wwwRootPath
-	wwwRoot = GetTextBoxValue("txtWwwRoot")
-	wwwRootPath = FSO.BuildPath(wwwRoot, FileName)
-	MsgBox wwwRootPath
+	Request.Open "PUT", WwwUrlPath, False, UserName, Password
 	
-	' Прочитать двоично файл wwwRootPath
-	Dim FileData
-	FileData = ReadBinaryFile(wwwRootPath)
-	' MsgBox VarTypeToString(FileData)
-	' MsgBox TypeName(FileData)
+	Request.SetRequestHeader "Content-Type", ContentType
+	If Len(ContentLanguage) > 0 Then
+		Request.SetRequestHeader "Content-Language", ContentLanguage
+	End If
+	
+	Request.send DataBytes
+	
+	HttpPutData = "HTTP/1.1 " & Request.Status & " " & Request.StatusText & vbCrLf &  Request.getAllResponseHeaders
+	
+	Set Request = Nothing
+End Function
+
+Function SendFile(UrlPath, FileName, ContentType, ContentLanguage)
+	Dim SourceFolder, FullFileName
+	SourceFolder = GetTextBoxValue("txtWwwRoot")
+	FullFileName = FSO.BuildPath(SourceFolder, FileName)
 	
 	Dim wwwUrl, wwwUrlPath
 	wwwUrl = GetTextBoxValue("txtUrl")
 	wwwUrlPath = FSO.BuildPath(wwwUrl, UrlPath)
-	MsgBox wwwUrlPath
 	
 	Dim UserName
 	UserName = GetTextBoxValue("txtUserName")
@@ -399,19 +529,12 @@ Sub SendFile(UrlPath, FileName, ContentType, ContentLanguage)
 	Dim Password
 	Password = GetTextBoxValue("txtPassword")
 	
-	Dim Request
-	Set Request = CreateObject("Microsoft.XmlHttp")
-	Request.Open "PUT", wwwUrlPath, False, UserName, Password
-	Request.SetRequestHeader "Content-Type", ContentType
-	If Len(ContentLanguage) > 0 Then
-		Request.SetRequestHeader "Content-Language", ContentLanguage
-	End If
-	Request.send FileData
+	Dim FileData
+	FileData = ReadBinaryFile(FullFileName)
 	
-	MsgBox "HTTP/1.1 " & Request.Status & " " & Request.StatusText & vbCrLf &  Request.getAllResponseHeaders
+	SendFile = HttpPutData(wwwUrlPath, FileData, ContentType, ContentLanguage, UserName, Password)
 	
-	Set Request = Nothing
-End Sub
+End Function
 
 Sub SendBinaryFile()
 	Dim oFile
@@ -437,34 +560,54 @@ Sub SendTextFile()
 	oFile.ContentType = GetSectionHiddenValue(me, 2)
 	oFile.ContentLanguage = GetSectionHiddenValue(me, 3)
 	
-	' Сделать одной строкой
-	Dim OneLineUtils
-	OneLineUtils = GetTextBoxValue("txtOnelineFolder")
-	
 	Dim FullFileName, FullFileNameTxt, FullFileNameGzip, FullFileNameTxtUtf8
 	FullFileName = FSO.BuildPath(GetTextBoxValue("txtWwwRoot"), oFile.FileName)
 	FullFileNameTxt = FullFileName & ".txt"
-	FullFileNameGzip = FullFileName & ".gz"
 	FullFileNameTxtUtf8 = FullFileName & ".utf-8.txt"
+	FullFileNameGzip = FullFileName & ".gz"
 	
-	Dim Commanda
-	Commanda = """" & OneLineUtils & """" & " " & """" & FullFileName & """"
-	' MsgBox Commanda
-	
-	Dim RetCode
-	RetCode = WshShell.Run(Commanda, 0, True)
-	
+	TextFileToOneLine FullFileName
 	SendFile oFile.UrlPath, oFile.FileName & ".txt", oFile.ContentType, oFile.ContentLanguage
 	
-	' Архивировать
-	Dim ArchUtils
-	ArchUtils = GetTextBoxValue("txt7zipFolder")
-	'"%ProgramFiles%\7-Zip\7z.exe" a %FileNameToSendGZip% %FileNameOneLineUTF8woBOM% -mx9
-	Commanda = """" & ArchUtils & """" & " a " & """" & FullFileNameGzip & """" & " " & """" & FullFileNameTxtUtf8 & """ -mx9"
-	' MsgBox Commanda
+	ArchiveFile FullFileNameGzip, FullFileNameTxtUtf8
+	SendFile oFile.UrlPath & ".gz", oFile.FileName & ".gz", "application/x-gzip", oFile.ContentLanguage
 	
-	RetCode = WshShell.Run(Commanda, 0, True)
+	Set oFile = Nothing
 	
+	FSO.DeleteFile FullFileNameTxt
+	FSO.DeleteFile FullFileNameGzip
+	FSO.DeleteFile FullFileNameTxtUtf8
+	
+End Sub
+
+Sub SendGenerationFile()
+	Dim oFile
+	Set oFile = New GenerationFileOptions
+	
+	oFile.UrlPath = GetSectionHiddenValue(me, 0)
+	oFile.FileName = GetSectionHiddenValue(me, 1)
+	oFile.ContentType = GetSectionHiddenValue(me, 2)
+	oFile.ContentLanguage = GetSectionHiddenValue(me, 3)
+	oFile.YamlFileName = GetSectionHiddenValue(me, 4)
+	
+	Dim FullFileName, FullYamlFileName, FullFileNameTxt, FullFileNameGzip, FullFileNameTxtUtf8
+	FullFileName = FSO.BuildPath(GetTextBoxValue("txtWwwRoot"), oFile.FileName)
+	FullYamlFileName = FSO.BuildPath(GetTextBoxValue("txtWwwRoot"), oFile.YamlFileName)
+	FullFileNameTxt = FullFileName & ".txt"
+	FullFileNameTxtUtf8 = FullFileName & ".utf-8.txt"
+	FullFileNameGzip = FullFileName & ".gz"
+	
+	Dim OldCurrentDirectory
+	OldCurrentDirectory = WshShell.CurrentDirectory
+	WshShell.CurrentDirectory = GetTextBoxValue("txtWwwRoot")
+	
+	GenerateFile oFile.YamlFileName
+	WshShell.CurrentDirectory = OldCurrentDirectory
+	
+	TextFileToOneLine FullFileName
+	SendFile oFile.UrlPath, oFile.FileName & ".txt", oFile.ContentType, oFile.ContentLanguage
+	
+	ArchiveFile FullFileNameGzip, FullFileNameTxtUtf8
 	SendFile oFile.UrlPath & ".gz", oFile.FileName & ".gz", "application/x-gzip", oFile.ContentLanguage
 	
 	Set oFile = Nothing
