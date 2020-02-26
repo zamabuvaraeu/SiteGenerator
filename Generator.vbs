@@ -537,7 +537,24 @@ Function SendFile(UrlPath, FileName, ContentType, ContentLanguage)
 End Function
 
 Sub SendAllBinaryFiles_Click()
+	Dim colNodes, node
 	
+	Dim Output
+	Output = ""
+	
+	Set colNodes = xmlParser.selectNodes("/WebSiteGenerator/binaryFiles")
+	For Each node In colNodes
+		Dim oFile
+		Set oFile = GetBinaryFileOptions(node)
+		
+		Output = Output & vbCrLf & vbCrLf & SendFile(oFile.UrlPath, oFile.FileName, oFile.ContentType, oFile.ContentLanguage)
+		
+		Set oFile = Nothing
+	Next
+	Set colNodes = Nothing
+	
+	SetTextBoxValue "txtOutput", Output
+
 End Sub
 
 Sub SendBinaryFile_Click()
@@ -549,7 +566,10 @@ Sub SendBinaryFile_Click()
 	oFile.ContentType = GetSectionHiddenValue(me, 2)
 	oFile.ContentLanguage = GetSectionHiddenValue(me, 3)
 	
-	SetTextBoxValue "txtOutput", SendFile(oFile.UrlPath, oFile.FileName, oFile.ContentType, oFile.ContentLanguage)
+	Dim Output
+	
+	Output = SendFile(oFile.UrlPath, oFile.FileName, oFile.ContentType, oFile.ContentLanguage)
+	SetTextBoxValue "txtOutput", Output
 	
 	Set oFile = Nothing
 	
