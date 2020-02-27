@@ -80,7 +80,7 @@ Function HttpPutData(WwwUrlPath, DataBytes, ContentType, ContentLanguage, UserNa
 	
 	Request.send DataBytes
 	
-	HttpPutData = "HTTP/1.1 " & Request.Status & " " & Request.StatusText & vbCrLf &  Request.getAllResponseHeaders
+	HttpPutData = "HTTP/1.1 " & Request.Status & " " & Request.StatusText & vbCrLf '&  Request.getAllResponseHeaders
 	
 	Set Request = Nothing
 End Function
@@ -110,8 +110,8 @@ Function QuoteString(Value)
 	QuoteString = """" & Value & """"
 End Function
 
-Function GetHttpPutRequestString(oFile)
-	GetHttpPutRequestString = "PUT " & oFile.UrlPath & " HTTP/1.1" & vbCrLf & vbCrLf
+Function GetHttpPutRequestString(UrlPath)
+	GetHttpPutRequestString = "PUT " & UrlPath & " HTTP/1.1" & vbCrLf
 End Function
 
 Sub ClearFilePlaceholder()
@@ -143,38 +143,38 @@ Function GetConfigurationFileName()
 	GetConfigurationFileName = GetTextBoxValue("txtConfigurationFileName")
 End Function
 
-Sub TextFileToOneLine(FullFileName)
+Function TextFileToOneLine(FullFileName)
 	Dim OneLineUtils
 	OneLineUtils = GetTextBoxValue("txtOnelineFolder")
 	
 	Dim Commanda
 	Commanda = QuoteString(OneLineUtils) & " " & QuoteString(FullFileName)
 	
-	Dim RetCode
-	RetCode = WshShell.Run(Commanda, 0, True)
-End Sub
+	TextFileToOneLine = WshShell.Run(Commanda, 0, True)
+	
+End Function
 
-Sub ArchiveFile(FullFileNameGzip, FullFileNameTxtUtf8)
+Function ArchiveFile(FullFileNameGzip, FullFileNameTxtUtf8)
 	Dim ArchUtils
 	ArchUtils = GetTextBoxValue("txt7zipFolder")
 	
 	Dim Commanda
 	Commanda = QuoteString(ArchUtils) & " a " & QuoteString(FullFileNameGzip) & " " & QuoteString(FullFileNameTxtUtf8) & " -mx9"
 	
-	Dim RetCode
-	RetCode = WshShell.Run(Commanda, 0, True)
-End Sub
+	ArchiveFile = WshShell.Run(Commanda, 0, True)
+	
+End Function
 
-Sub GenerateFile(YamlFullFileName)
+Function GenerateFile(YamlFullFileName)
 	Dim PandocUtils
 	PandocUtils = GetTextBoxValue("txtPandocFolder")
 	
 	Dim Commanda
 	Commanda = QuoteString(PandocUtils) & " -d " & QuoteString(YamlFullFileName)
 	
-	Dim RetCode
-	RetCode = WshShell.Run(Commanda, 0, True)
-End Sub
+	GenerateFile = WshShell.Run(Commanda, 0, True)
+	
+End Function
 
 Function GetConfigurationOptions(xmlParser)
 	Set GetConfigurationOptions = New ConfigurationOptions
@@ -551,8 +551,8 @@ Sub SendAllBinaryFiles_Click()
 		Dim oFile
 		Set oFile = GetBinaryFileOptions(node)
 		
-		Output = Output & GetHttpPutRequestString(oFile)
-		Output = Output & vbCrLf & vbCrLf & SendFile(oFile.UrlPath, oFile.FileName, oFile.ContentType, oFile.ContentLanguage)
+		Output = Output & GetHttpPutRequestString(oFile.UrlPath)
+		Output = Output & SendFile(oFile.UrlPath, oFile.FileName, oFile.ContentType, oFile.ContentLanguage)
 		
 		Set oFile = Nothing
 	Next
@@ -597,13 +597,15 @@ Sub SendTextFile_Click()
 	FullFileNameGzip = FullFileName & ".gz"
 	
 	Dim Output
-	Output = GetHttpPutRequestString(oFile)
+	Output = "Минификатор файла завершился кодом: " & CStr(TextFileToOneLine(FullFileName)) & vbCrLf
 	
-	TextFileToOneLine FullFileName
+	Output = Output & GetHttpPutRequestString(oFile.UrlPath)
 	Output = Output & SendFile(oFile.UrlPath, oFile.FileName & ".txt", oFile.ContentType, oFile.ContentLanguage)
 	
-	ArchiveFile FullFileNameGzip, FullFileNameTxtUtf8
-	Output = Output & vbCrLf & vbCrLf & SendFile(oFile.UrlPath & ".gz", oFile.FileName & ".gz", "application/x-gzip", oFile.ContentLanguage)
+	Output = Output & "Архиватор файла завершился кодом: " & CStr(ArchiveFile(FullFileNameGzip, FullFileNameTxtUtf8)) & vbCrLf
+	
+	Output = Output & GetHttpPutRequestString(oFile.UrlPath & ".gz")
+	Output = Output & SendFile(oFile.UrlPath & ".gz", oFile.FileName & ".gz", "application/x-gzip", oFile.ContentLanguage)
 	
 	Set oFile = Nothing
 	
@@ -634,19 +636,20 @@ Sub SendGenerationFile_Click()
 	
 	Dim OldCurrentDirectory
 	OldCurrentDirectory = WshShell.CurrentDirectory
-	WshShell.CurrentDirectory = GetTextBoxValue("txtWwwRoot")
-	
-	GenerateFile oFile.YamlFileName
-	WshShell.CurrentDirectory = OldCurrentDirectory
 	
 	Dim Output
-	Output = GetHttpPutRequestString(oFile)
+	WshShell.CurrentDirectory = GetTextBoxValue("txtWwwRoot")
+	Output = "Генератор файла завершился кодом: " & CStr(GenerateFile(oFile.YamlFileName)) & vbCrLf
+	WshShell.CurrentDirectory = OldCurrentDirectory
 	
-	TextFileToOneLine FullFileName
+	Output = Output & "Минификатор файла завершился кодом: " & CStr(TextFileToOneLine(FullFileName)) & vbCrLf
+	Output = Output & GetHttpPutRequestString(oFile.UrlPath)
 	Output = Output & SendFile(oFile.UrlPath, oFile.FileName & ".txt", oFile.ContentType, oFile.ContentLanguage)
 	
-	ArchiveFile FullFileNameGzip, FullFileNameTxtUtf8
-	Output = Output & vbCrLf & vbCrLf & SendFile(oFile.UrlPath & ".gz", oFile.FileName & ".gz", "application/x-gzip", oFile.ContentLanguage)
+	Output = Output & "Архиватор файла завершился кодом: " & CStr(ArchiveFile(FullFileNameGzip, FullFileNameTxtUtf8)) & vbCrLf
+	
+	Output = Output & GetHttpPutRequestString(oFile.UrlPath & ".gz")
+	Output = Output & SendFile(oFile.UrlPath & ".gz", oFile.FileName & ".gz", "application/x-gzip", oFile.ContentLanguage)
 	
 	Set oFile = Nothing
 	
