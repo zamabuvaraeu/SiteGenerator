@@ -110,6 +110,10 @@ Function QuoteString(Value)
 	QuoteString = """" & Value & """"
 End Function
 
+Function GetHttpPutRequestString(oFile)
+	GetHttpPutRequestString = "PUT " & oFile.UrlPath & " HTTP/1.1" & vbCrLf & vbCrLf
+End Function
+
 Sub ClearFilePlaceholder()
 	Dim PlaceHolderFileList
 	Set PlaceHolderFileList = document.getElementById("PlaceHolderFileList")
@@ -547,6 +551,7 @@ Sub SendAllBinaryFiles_Click()
 		Dim oFile
 		Set oFile = GetBinaryFileOptions(node)
 		
+		Output = Output & GetHttpPutRequestString(oFile)
 		Output = Output & vbCrLf & vbCrLf & SendFile(oFile.UrlPath, oFile.FileName, oFile.ContentType, oFile.ContentLanguage)
 		
 		Set oFile = Nothing
@@ -567,9 +572,10 @@ Sub SendBinaryFile_Click()
 	oFile.ContentLanguage = GetSectionHiddenValue(me, 3)
 	
 	Dim Output
+	Output = GetHttpPutRequestString(oFile)
 	
-	Output = SendFile(oFile.UrlPath, oFile.FileName, oFile.ContentType, oFile.ContentLanguage)
-	SetTextBoxValue "txtOutput", Output
+	Output = Output & SendFile(oFile.UrlPath, oFile.FileName, oFile.ContentType, oFile.ContentLanguage)
+	MsgBox Output
 	
 	Set oFile = Nothing
 	
@@ -591,16 +597,17 @@ Sub SendTextFile_Click()
 	FullFileNameGzip = FullFileName & ".gz"
 	
 	Dim Output
+	Output = GetHttpPutRequestString(oFile)
 	
 	TextFileToOneLine FullFileName
-	Output = SendFile(oFile.UrlPath, oFile.FileName & ".txt", oFile.ContentType, oFile.ContentLanguage)
+	Output = Output & SendFile(oFile.UrlPath, oFile.FileName & ".txt", oFile.ContentType, oFile.ContentLanguage)
 	
 	ArchiveFile FullFileNameGzip, FullFileNameTxtUtf8
 	Output = Output & vbCrLf & vbCrLf & SendFile(oFile.UrlPath & ".gz", oFile.FileName & ".gz", "application/x-gzip", oFile.ContentLanguage)
 	
 	Set oFile = Nothing
 	
-	SetTextBoxValue "txtOutput", Output
+	MsgBox Output
 	
 	FSO.DeleteFile FullFileNameTxt
 	FSO.DeleteFile FullFileNameGzip
@@ -633,16 +640,17 @@ Sub SendGenerationFile_Click()
 	WshShell.CurrentDirectory = OldCurrentDirectory
 	
 	Dim Output
+	Output = GetHttpPutRequestString(oFile)
 	
 	TextFileToOneLine FullFileName
-	Output = SendFile(oFile.UrlPath, oFile.FileName & ".txt", oFile.ContentType, oFile.ContentLanguage)
+	Output = Output & SendFile(oFile.UrlPath, oFile.FileName & ".txt", oFile.ContentType, oFile.ContentLanguage)
 	
 	ArchiveFile FullFileNameGzip, FullFileNameTxtUtf8
 	Output = Output & vbCrLf & vbCrLf & SendFile(oFile.UrlPath & ".gz", oFile.FileName & ".gz", "application/x-gzip", oFile.ContentLanguage)
 	
 	Set oFile = Nothing
 	
-	SetTextBoxValue "txtOutput", Output
+	MsgBox Output
 	
 	FSO.DeleteFile FullFileNameTxt
 	FSO.DeleteFile FullFileNameGzip
